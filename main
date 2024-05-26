@@ -1,0 +1,106 @@
+import pygame
+import time
+import math
+from utils import scale_image, blit_rotate_center
+
+# Carga y escala las imágenes necesarias para el juego
+GRASS = scale_image(pygame.image.load("imgs/grass.jpg"), 2.5)
+TRACK = scale_image(pygame.image.load("imgs/track.png"), 0.9)
+TRACK_BORDER = scale_image(pygame.image.load("imgs/track-border.png"), 0.9)
+RED_CAR = scale_image(pygame.image.load("imgs/red-car.png"), 0.55)
+GREEN_CAR = scale_image(pygame.image.load("imgs/green-car.png"), 0.55)
+
+# Define las dimensiones de la ventana del juego basadas en el tamaño de la pista
+WIDTH, HEIGHT = TRACK.get_width(), TRACK.get_height()
+WIN = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption("Racing Game!")
+
+# Define la cantidad de cuadros por segundo para la actualización de la pantalla
+FPS = 60
+
+# Clase abstracta que representa un coche en el juego
+class AbstractCar:
+    def __init__(self, max_vel, rotation_vel):
+        self.img = self.IMG  # Imagen del coche
+        self.max_vel = max_vel  # Velocidad máxima del coche
+        self.vel = 0  # Velocidad actual del coche
+        self.rotation_vel = rotation_vel  # Velocidad de rotación del coche
+        self.angle = 0  # Ángulo actual del coche
+        self.x, self.y = self.START_POS  # Posición inicial del coche
+        self.acceleration = 0.1  # Aceleración del coche
+
+    # Método para rotar el coche a la izquierda o a la derecha
+    def rotate(self, left=False, right=False):
+        if left:
+            self.angle += self.rotation_vel
+        elif right:
+            self.angle -= self.rotation_vel
+
+    # Método para dibujar el coche en la ventana
+    def draw(self, win):
+        blit_rotate_center(win, self.img, (self.x, self.y), self.angle)
+
+    # Método para mover el coche hacia adelante
+    def move_forward(self):
+        self.vel = min(self.vel + self.acceleration, self.max_vel)
+        self.move()
+
+    # Método para mover el coche basado en su ángulo y velocidad
+    def move(self):
+        radians = math.radians(self.angle)
+        vertical = math.cos(radians) * self.vel
+        horizontal = math.sin(radians) * self.vel
+        self.y -= vertical
+        self.x -= horizontal
+
+    # Método para reducir la velocidad del coche gradualmente
+    def reduce_speed(self):
+        self.vel = max(self.vel - self.acceleration / 2, 0)
+        self.move()
+
+# Clase que representa el coche del jugador, hereda de AbstractCar
+class PlayerCar(AbstractCar):
+    IMG = RED_CAR  # Imagen específica para el coche del jugador
+    START_POS = (180, 200)  # Posición inicial del coche del jugador
+
+# Función para dibujar todos los elementos en la ventana del juego
+def draw(win, images, player_car):
+    for img, pos in images:
+        win.blit(img, pos)  # Dibuja las imágenes del fondo (césped y pista)
+    player_car.draw(win)  # Dibuja el coche del jugador
+    pygame.display.update()  # Actualiza la pantalla
+
+# Inicializa variables para el bucle principal del juego
+run = True
+clock = pygame.time.Clock()
+images = [(GRASS, (0, 0)), (TRACK, (0, 0))]
+player_car = PlayerCar(4, 4)  # Crea una instancia del coche del jugador con velocidad máxima y de rotación
+
+# Bucle principal del juego
+while run:
+    clock.tick(FPS)  # Mantiene el juego a 60 cuadros por segundo
+    draw(WIN, images, player_car)  # Dibuja todos los elementos en la ventana
+
+    # Maneja los eventos del juego
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:  # Si se cierra la ventana, termina el bucle
+            run = False
+            break
+
+    # Maneja la entrada del teclado
+    keys = pygame.key.get_pressed()
+    moved = False
+
+    if keys[pygame.K_a]:  # Si se presiona la tecla 'a', rota el coche a la izquierda
+        player_car.rotate(left=True)
+    if keys[pygame.K_d]:  # Si se presiona la tecla 'd', rota el coche a la derecha
+        player_car.rotate(right=True)
+    if keys[pygame.K_w]:  # Si se presiona la tecla 'w', mueve el coche hacia adelante
+        moved = True
+        player_car.move_forward()
+
+    if not moved:  # Si no se ha movido el coche, reduce su velocidad gradualmente
+        player_car.reduce_speed()
+
+# Finaliza el juego y cierra la ventana
+pygame.quit()
