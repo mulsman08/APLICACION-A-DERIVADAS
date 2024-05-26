@@ -1,13 +1,18 @@
-import pygame
+import pygame  # Importa el módulo pygame para crear videojuegos.
 
-
+# Función para escalar una imagen por un factor determinado.
 def scale_image(img, factor):
+    # Calcula el nuevo tamaño de la imagen escalada.
     size = round(img.get_width() * factor), round(img.get_height() * factor)
+    # Devuelve la imagen escalada usando el método transform.scale de pygame.
     return pygame.transform.scale(img, size)
 
-
+# Función para rotar una imagen y dibujarla en el centro de una ventana.
 def blit_rotate_center(win, image, top_left, angle):
+    # Rota la imagen por el ángulo especificado.
     rotated_image = pygame.transform.rotate(image, angle)
+    # Obtiene un nuevo rectángulo centrado en las coordenadas originales de la imagen.
     new_rect = rotated_image.get_rect(
         center=image.get_rect(topleft=top_left).center)
+    # Dibuja la imagen rotada en la ventana en la nueva posición calculada.
     win.blit(rotated_image, new_rect.topleft)
