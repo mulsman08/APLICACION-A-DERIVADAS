@@ -1,6 +1,6 @@
 import pygame # libreria para el juego
 import time #libreria pra contar el tiempo
-import math
+import math #libreria para girar en radianes
 from utils import scale_image, blit_rotate_center, blit_text_center #del progrma utils se importatá
 #funciones como  scale_image o blit_rotate_centewr
 
@@ -267,6 +267,7 @@ game_info = GameInfo()
 pygame.mixer.music.load("SubaHibi OST Minareta Fuukei.mp3")
 pygame.mixer.music.play(-1)  # Reproduce la música en bucle
 
+# cargar la musica 
 while run:
     clock.tick(FPS)
 
