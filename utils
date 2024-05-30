@@ -1,18 +1,24 @@
-import pygame  # Importa el módulo pygame para crear videojuegos.
+import pygame #libreria
 
-# Función para escalar una imagen por un factor determinado.
+# Función para escalar una imagen por un factor dado
 def scale_image(img, factor):
-    # Calcula el nuevo tamaño de la imagen escalada.
     size = round(img.get_width() * factor), round(img.get_height() * factor)
-    # Devuelve la imagen escalada usando el método transform.scale de pygame.
     return pygame.transform.scale(img, size)
 
-# Función para rotar una imagen y dibujarla en el centro de una ventana.
+# Función para rotar una imagen alrededor de su centro y luego dibujarla en la pantalla
 def blit_rotate_center(win, image, top_left, angle):
-    # Rota la imagen por el ángulo especificado.
+     # Rotar la imagen
     rotated_image = pygame.transform.rotate(image, angle)
-    # Obtiene un nuevo rectángulo centrado en las coordenadas originales de la imagen.
+    # Calcular el nuevo rectángulo que contiene la imagen rotada, centrado en el punto original
     new_rect = rotated_image.get_rect(
         center=image.get_rect(topleft=top_left).center)
-    # Dibuja la imagen rotada en la ventana en la nueva posición calculada.
+    # Dibujar la imagen rotada en la nueva posición
     win.blit(rotated_image, new_rect.topleft)
+
+# Función para dibujar texto centrado en la ventana
+def blit_text_center(win, font, text):
+    # Renderizar el texto con la fuente dada
+    render = font.render(text, 1, (200, 200, 200))
+    # Calcular las coordenadas para centrar el texto en la ventana
+    win.blit(render, (win.get_width()/2 - render.get_width() /
+                      2, win.get_height()/2 - render.get_height()/2))
